@@ -8,7 +8,7 @@ using namespace MathUtilities;
 Hunter::Hunter(Maze* maze) : mMaze{ maze }
 {
 	name = "Hunter";
-	LoadModel("Assets/Models/Hunter.fbx");
+	//LoadModel("Assets/Models/Hunter.fbx");
 
 	mCurrentCell = mMaze->START_CELL_POS;
 	mPrevCell = Maze::CellPos(-1, -1);

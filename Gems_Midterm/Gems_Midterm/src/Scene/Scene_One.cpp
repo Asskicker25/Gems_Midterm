@@ -26,12 +26,16 @@ void Scene_One::Start()
 
 	mMaze = new Maze(HUNTERS_COUNT);
 
+	Model hunterModel("Assets/Models/Hunter.fbx",true);
+
 	for (int i = 0; i < HUNTERS_COUNT; i++)
 	{
 		Hunter* hunter = new Hunter(mMaze);
+		hunter->CopyFromModel(hunterModel,true);
 		hunter->mHunterId = i;
 		mListOfHunters.push_back(hunter);
 	}
+
 }
 
 void Scene_One::Update()
