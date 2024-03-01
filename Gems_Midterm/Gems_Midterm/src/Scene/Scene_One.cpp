@@ -47,6 +47,7 @@ void Scene_One::Update()
 
 void Scene_One::Render()
 {
+	mMaze->RenderWallInstancing();
 }
 
 void Scene_One::OnPlayStateChanged(bool state)

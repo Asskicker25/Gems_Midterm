@@ -12,24 +12,6 @@ Hunter::Hunter(Maze* maze) : mMaze{ maze }
 
 }
 
-void Hunter::InitializeThread()
-{
-	mThreadInfo.mDesiredUpdateTime = FIXED_STEP_TIME;
-	mThreadInfo.mHunter = this;
-	mThreadInfo.isAlive = true;
-	mThreadInfo.sleepTime = 1;
-	mThreadInfo.mMaze_CS = &mMaze->mMaze_CS;
-
-	mThreadInfo.threadHandle = CreateThread(
-		NULL,							// lpThreadAttributes,
-		0,								// dwStackSize,
-		UpdateHunterThread,				// lpStartAddress,
-		(void*)&mThreadInfo,			//  lpParameter,
-		0,								// dwCreationFlags (0 or CREATE_SUSPENDED)
-		&mThreadInfo.ThreadId);			// lpThreadId
-
-}
-
 void Hunter::Initialize()
 {
 	mCurrentCell = mMaze->START_CELL_POS;
@@ -42,6 +24,26 @@ void Hunter::Initialize()
 	InputManager::GetInstance().AddListener(this);
 	InitializeThread();
 }
+
+
+void Hunter::InitializeThread()
+{
+	mThreadInfo.mDesiredUpdateTime = FIXED_STEP_TIME;
+	mThreadInfo.mHunter = this;
+	mThreadInfo.isAlive = true;
+	mThreadInfo.sleepTime = 100;
+	mThreadInfo.mMaze_CS = &mMaze->mMaze_CS;
+
+	mThreadInfo.threadHandle = CreateThread(
+		NULL,							// lpThreadAttributes,
+		0,								// dwStackSize,
+		UpdateHunterThread,				// lpStartAddress,
+		(void*)&mThreadInfo,			//  lpParameter,
+		0,								// dwCreationFlags (0 or CREATE_SUSPENDED)
+		&mThreadInfo.ThreadId);			// lpThreadId
+
+}
+
 
 Hunter::~Hunter()
 {
@@ -77,7 +79,7 @@ DWORD UpdateHunterThread(LPVOID lpParameter)
 			{
 				timeStep = 0;
 
-				threadInfo->mHunter->UpdateHunter(deltaTime);
+				threadInfo->mHunter->UpdateHunter(deltaTime, threadInfo);
 			}
 
 			Sleep(threadInfo->sleepTime);
@@ -89,14 +91,14 @@ DWORD UpdateHunterThread(LPVOID lpParameter)
 	return 0;
 }
 
-void Hunter::UpdateHunter(float delatTime)
+void Hunter::UpdateHunter(float delatTime, HunterThreadInfo* threadInfo)
 {
 	mTimeStep += delatTime;
 
 	if (mTimeStep > HUNTER_NEXT_STEP_TIME)
 	{
 		mTimeStep = 0;
-		Move();
+		Move(threadInfo);
 	}
 }
 
@@ -129,9 +131,11 @@ void Hunter::OnPropertyDraw()
 	ImGui::TreePop();
 }
 
-void Hunter::Move()
+void Hunter::Move(HunterThreadInfo* threadInfo)
 {
 	std::vector<Maze::CellPos*>& adjacentCells = mMaze->GetCell(mCurrentCell).mAdjacentFloors;
+
+	EnterCriticalSection(threadInfo->mMaze_CS);
 
 	std::vector<Maze::CellPos*> mListOfLeastWeightCells;
 	GetLeastWeightedCells(adjacentCells, mListOfLeastWeightCells);
@@ -151,6 +155,8 @@ void Hunter::Move()
 
 		MoveToPosition(mListOfLeastWeightCells[randomIndex]);
 	}
+
+	LeaveCriticalSection(threadInfo->mMaze_CS);
 }
 
 void Hunter::MoveToPosition(Maze::CellPos* cellPos)

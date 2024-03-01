@@ -2,6 +2,7 @@
 
 #include <Graphics/EntityManager/EntityManager.h>
 #include <Graphics/Model.h>
+#include <Graphics/MeshInstance.h>
 #include <Windows.h>
 
 class Maze : public Entity
@@ -68,6 +69,7 @@ public:
 	void OnDestroy() override;
 	virtual void OnPropertyDraw();
 
+	void RenderWallInstancing();
 
 	int GetRandomIntNumber(int minInclusive, int maxInclusive);
 
@@ -98,16 +100,17 @@ private:
 	bool IsFloor(unsigned int row, unsigned int column);
 	bool HasTreasure(unsigned int row, unsigned int column);
 
+	static const int ROW_SIZE = 149;
+	static const int COLUMN_SIZE = 115;
+	static const int TREASURE_COUNT = 250;
+	static constexpr float CELL_SIZE = 2.0f;
+
+	MeshInstance* mWallInstances[ROW_SIZE];
 	Model* mQuad = nullptr;
 
 	int mWallCount = 0;
 	int mNumOfTreasures = 0;
 	unsigned int mNumOfHunters = 0;
-
-	static const int ROW_SIZE = 149;
-	static const int COLUMN_SIZE = 115;
-	static const int TREASURE_COUNT = 250;
-	static constexpr float CELL_SIZE = 2.0f;
 
 	glm::vec4 mStartPosColor = glm::vec4(0.1f, 0.8f, 0.1f, 1.0f);
 	glm::vec4 mEndPosColor = glm::vec4(0.8f, 0.1f, 0.1f, 1.0f);

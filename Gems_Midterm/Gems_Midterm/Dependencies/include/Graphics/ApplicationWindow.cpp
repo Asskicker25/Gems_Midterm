@@ -136,8 +136,7 @@ void ApplicationWindow::InitializeWindow(int windowWidth, int windowHeight)
 	//Debugger::Print("DefShader Shader Id : ", defShader.GetShaderId());
 	defShader.applyInverseModel = true;
 
-	defInstanceShader.LoadShader("res/Shader/DefaultInstancing.shader");
-	defInstanceShader.applyInverseModel = true;
+	defInstanceShader.LoadShader("res/Shader/DefaultInstancing.shader", Shader::ALPHA_OPAQUE, false);
 
 	alphaBlendShader.LoadShader("res/Shader/Shader.shader");
 	//Debugger::Print("TranparentShader Shader Id : ", alphaBlendShader.GetShaderId());

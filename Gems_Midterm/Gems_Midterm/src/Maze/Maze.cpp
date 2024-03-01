@@ -125,7 +125,15 @@ void Maze::LoadModels()
 	mQuad->name = "Quad";
 	mQuad->shader = Renderer::GetInstance().solidColorShader;
 	mQuad->meshes[0]->material = new UnlitColorMaterial();
+	mQuad->meshes[0]->material->AsUnlitMaterial()->SetBaseColor(glm::vec4(1));
 	mQuad->transform.SetScale(glm::vec3(0.9f));
+
+	for (int i = 0; i < ROW_SIZE; i++)
+	{
+		mWallInstances[i] = new MeshInstance();
+		mWallInstances[i]->CopyFromModel(*mQuad);
+		mWallInstances[i]->shader = Renderer::GetInstance().defInstanceShader;
+	}
 
 	/*Model* meh = new Model();
 	meh->CopyFromModel(*mQuad);*/
@@ -148,13 +156,15 @@ void Maze::LoadModels()
 
 			if (mMazeCells[row][column].type == Cell::WALL)
 			{
-				Model* wall = new Model();
+				/*Model* wall = new Model();
 				wall->CopyFromModel(*mQuad);
 
 				wall->transform.SetPosition(cellWorldPosition);
 
 				Renderer::GetInstance().AddModel(wall);
-				mListOfWalls.push_back(wall);
+				mListOfWalls.push_back(wall);*/
+
+				mWallInstances[row]->AddTransformValues(glm::vec3(cellWorldPosition), glm::vec3(0), glm::vec3(0.9f));
 			}
 			else
 			{
@@ -171,7 +181,7 @@ void Maze::LoadModels()
 				}
 
 
-				Model* floor = new Model();
+				/*Model* floor = new Model();
 				floor->CopyFromModel(*mQuad, false);
 				floor->meshes[0]->material->AsUnlitMaterial()->SetBaseColor(mFloorColor);
 				floor->transform.SetPosition(cellWorldPosition);
@@ -179,7 +189,7 @@ void Maze::LoadModels()
 				floor->transform.SetScale(glm::vec3(1.0f));
 
 				Renderer::GetInstance().AddModel(floor);
-				mListOfFloors[GetUniqueId(row, column)] = floor;
+				mListOfFloors[GetUniqueId(row, column)] = floor;*/
 
 				AddAsFloor(CellPos(row, column));
 			}
@@ -300,8 +310,19 @@ int Maze::GetRandomIntNumber(int minInclusive, int maxInclusive)
 	return random;
 }
 
+void Maze::RenderWallInstancing()
+{
+	for (int i = 0; i < ROW_SIZE; i++)
+	{
+		mWallInstances[i]->DrawShaded(mWallInstances[i]->shader);
+	}
+
+}
+
 void Maze::UpdateCellColor(CellPos& cellPos)
 {
+	return;
+
 	std::vector<Object*> listOfSelectedObjects = EditorLayout::GetInstance().GetSelectedObject();
 
 	if (listOfSelectedObjects.size() == 0) return;

@@ -33,7 +33,7 @@ private:
 	Light* mDirLight = nullptr;
 	Maze* mMaze = nullptr;
 
-	static const int HUNTERS_COUNT = 1;
+	static const int HUNTERS_COUNT = 30;
 	std::vector<Hunter*> mListOfHunters;
 
 };
