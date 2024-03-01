@@ -17,6 +17,14 @@ public:
 			this->Y = Y;
 		}
 
+		void InitializeWeight(unsigned int num)
+		{
+			for (int i = 0; i < num; i++)
+			{
+				mWeight[i] = 0;
+			}
+		}
+
 		bool operator==(const CellPos& other)
 		{
 			if (other.X != X) return false;
@@ -28,7 +36,8 @@ public:
 		unsigned int X = 0;
 		unsigned int Y = 0;
 
-		int mWeight = 0;
+		std::unordered_map<int, int> mWeight;
+		//int mWeight = 0;
 	};
 
 	struct Cell
@@ -49,7 +58,7 @@ public:
 
 	};
 
-	Maze();
+	Maze(unsigned int numOfHunters);
 	~Maze();
 
 	// Inherited via Entity
@@ -57,6 +66,10 @@ public:
 	void Update(float deltaTime) override;
 	void Render() override;
 	void OnDestroy() override;
+	virtual void OnPropertyDraw();
+
+
+	int GetRandomIntNumber(int minInclusive, int maxInclusive);
 
 	static CellPos START_CELL_POS;
 	static CellPos END_CELL_POS;
@@ -65,6 +78,7 @@ public:
 	glm::vec3 GetCellPosition(CellPos cellPos);
 
 	void UpdateCellColor(CellPos& cellPos);
+	bool CheckAndCollectTreasure(CellPos& cellPos);
 
 	Cell& GetCell(CellPos cellPos);
 
@@ -87,6 +101,8 @@ private:
 	Model* mQuad = nullptr;
 
 	int mWallCount = 0;
+	int mNumOfTreasures = 0;
+	unsigned int mNumOfHunters = 0;
 
 	static const int ROW_SIZE = 149;
 	static const int COLUMN_SIZE = 115;

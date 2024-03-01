@@ -33,5 +33,7 @@ private:
 
 	static const int HUNTERS_COUNT = 5;
 	std::vector<Hunter*> mListOfHunters;
+
+	bool mApplicationPlayState = false;
 };
 

@@ -1,5 +1,6 @@
 #include "Scene_One.h"
 #include "../AppSettings.h"
+#include "../MazeApplication.h"
 
 Scene_One::Scene_One(MazeApplication* application)
 {
@@ -23,16 +24,26 @@ void Scene_One::Start()
 
 	mCameraController = new CameraController(mMainCamera);
 
-	mMaze = new Maze();
+	mMaze = new Maze(HUNTERS_COUNT);
 
 	for (int i = 0; i < HUNTERS_COUNT; i++)
 	{
 		Hunter* hunter = new Hunter(mMaze);
+		hunter->mHunterId = i;
+		mListOfHunters.push_back(hunter);
 	}
 }
 
 void Scene_One::Update()
 {
+	if (mApplicationPlayState == mApplication->applicationPlay) return;
+
+	mApplicationPlayState = !mApplicationPlayState;
+
+	for (Hunter* hunter : mListOfHunters)
+	{
+		hunter->mThreadInfo.mIsRunning = mApplicationPlayState;
+	}
 }
 
 void Scene_One::Render()

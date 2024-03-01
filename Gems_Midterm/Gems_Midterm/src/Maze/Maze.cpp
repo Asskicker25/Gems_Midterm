@@ -2,15 +2,18 @@
 #include <Graphics/Renderer.h>
 #include <Graphics/UnlitColorMaterial.h>
 #include <Graphics/MathUtils.h>
+#include <Graphics/Panels/EditorLayout.h>
+#include <Graphics/Panels/ImguiDrawUtils.h>
 
 #include "Maze.h"
+#include "../Hunter/Hunter.h"
 
 using namespace MathUtilities;
 
 Maze::CellPos Maze::START_CELL_POS = Maze::CellPos(147, 1);
 Maze::CellPos Maze::END_CELL_POS = Maze::CellPos(1, 113);
 
-Maze::Maze()
+Maze::Maze(unsigned int numOfHunters) : mNumOfHunters { numOfHunters }
 {
 	InitializeEntity(this);
 	name = "Maze";
@@ -141,6 +144,7 @@ void Maze::LoadModels()
 
 			mMazeCells[row][column].mCellWorldPosition = cellWorldPosition;
 			mMazeCells[row][column].mCellPos = CellPos(row, column);
+			mMazeCells[row][column].mCellPos.InitializeWeight(mNumOfHunters);
 
 			if (mMazeCells[row][column].type == Cell::WALL)
 			{
@@ -221,6 +225,7 @@ void Maze::SpawnTreasure()
 {
 	int randomX;
 	int randomY;
+	mNumOfTreasures = TREASURE_COUNT;
 
 	for (unsigned int count = 0; count < TREASURE_COUNT; count++)
 	{
@@ -268,12 +273,47 @@ int Maze::GetUniqueId(int row, int column)
 	return (row << 16) | column;
 }
 
+void Maze::OnPropertyDraw()
+{
+	if (!ImGui::TreeNodeEx("Maze", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		return;
+	}
+
+	ImGuiUtils::DrawInt("Treasure Count ", mNumOfTreasures);
+
+	ImGui::TreePop();
+}
+
+int Maze::GetRandomIntNumber(int minInclusive, int maxInclusive)
+{
+	EnterCriticalSection(&mMaze_CS);
+	//int random = MathUtils::GetRandomIntNumber(minInclusive, maxInclusive);
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<int> distribution(minInclusive, maxInclusive);
+
+	int random =  distribution(gen);
+
+	LeaveCriticalSection(&mMaze_CS);
+
+	return random;
+}
+
 void Maze::UpdateCellColor(CellPos& cellPos)
 {
+	std::vector<Object*> listOfSelectedObjects = EditorLayout::GetInstance().GetSelectedObject();
+
+	if (listOfSelectedObjects.size() == 0) return;
+
+	Hunter* hunter = nullptr;
+	if (!(hunter = dynamic_cast<Hunter*>(listOfSelectedObjects[0]))) return;
+
+
 	UnlitColorMaterial* mat = mListOfFloors[GetUniqueId(cellPos.X, cellPos.Y)]->meshes[0]->material->AsUnlitMaterial();
 
 	glm::vec4 color = mat->GetBaseColor();
-	color.x = MathUtils::Remap(cellPos.mWeight, 0, 10, 0, 1);
+	color.x = MathUtils::Remap(cellPos.mWeight[hunter->mHunterId], 0, 10, 0, 1);
 	mat->SetBaseColor(color);
 }
 
@@ -284,4 +324,26 @@ Maze::Cell& Maze::GetCell(CellPos cellPos)
 	LeaveCriticalSection(&mMaze_CS);
 
 	return cell;
+}
+
+bool Maze::CheckAndCollectTreasure(CellPos& cellPos)
+{
+	bool collected = false;
+
+	EnterCriticalSection(&mMaze_CS);
+
+	Cell& cell = GetCell(cellPos);
+
+	if (cell.mHasTreasure)
+	{
+		mListOfTreasures[GetUniqueId(cellPos.X, cellPos.Y)]->isActive = false;
+		Debugger::Print("Collected");
+		cell.mHasTreasure = false;
+		collected = true;
+		mNumOfTreasures--;
+	}
+
+	LeaveCriticalSection(&mMaze_CS);
+
+	return collected;
 }

@@ -14,11 +14,16 @@ public:
 	Hunter() = default;
 	Hunter(Maze* maze);
 
+	unsigned int mHunterId = 0;
+
 	void InitializeThread();
 	void UpdateHunter(float delatTime);
 	virtual void Update(float deltaTime) override;
 
 	virtual void OnKeyPressed(const int& key);
+	virtual void OnPropertyDraw();
+
+	HunterThreadInfo mThreadInfo;
 
 private:
 	void Move();
@@ -27,7 +32,8 @@ private:
 	void GetLeastWeightedCells(std::vector<Maze::CellPos*>& adjacentFloor, std::vector<Maze::CellPos*>& filteredList);
 
 	Maze* mMaze = nullptr;
-	HunterThreadInfo mThreadInfo;
+
+	int mNumberOfTreasureCollected = false;
 
 	float mTimeStep = 0;
 	float HUNTER_NEXT_STEP_TIME = 0.05f;

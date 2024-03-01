@@ -1,4 +1,5 @@
 #include <Graphics/MathUtils.h>
+#include <Graphics/Panels/ImguiDrawUtils.h>
 
 #include "Hunter.h"
 
@@ -109,6 +110,19 @@ void Hunter::OnKeyPressed(const int& key)
 	}
 }
 
+void Hunter::OnPropertyDraw()
+{
+	if (!ImGui::TreeNodeEx("Hunter", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		return;
+	}
+
+	ImGuiUtils::DrawInt("TreasureCount ", mNumberOfTreasureCollected);
+
+
+	ImGui::TreePop();
+}
+
 void Hunter::Move()
 {
 	std::vector<Maze::CellPos*>& adjacentCells = mMaze->GetCell(mCurrentCell).mAdjacentFloors;
@@ -125,7 +139,7 @@ void Hunter::Move()
 		int randomIndex = 0;
 		do
 		{
-			randomIndex = MathUtils::GetRandomIntNumber(0, mListOfLeastWeightCells.size() - 1);
+			randomIndex = mMaze->GetRandomIntNumber(0, mListOfLeastWeightCells.size() - 1);
 
 		} while (*mListOfLeastWeightCells[randomIndex] == mPrevCell);
 
@@ -141,24 +155,30 @@ void Hunter::MoveToPosition(Maze::CellPos* cellPos)
 	transform.position.z += 0.1;
 
 	mCurrentCell = *cellPos;
-	cellPos->mWeight++;
+	cellPos->mWeight[mHunterId]++;
+
+	if (mMaze->CheckAndCollectTreasure(*cellPos))
+	{
+		mNumberOfTreasureCollected++;
+	}
+
 	//mMaze->UpdateCellColor(cellPos);
 
 }
 
 void Hunter::GetLeastWeightedCells(std::vector<Maze::CellPos*>& adjacentFloor, std::vector<Maze::CellPos*>& filteredList)
 {
-	int minWeight = adjacentFloor[0]->mWeight;
+	int minWeight = adjacentFloor[0]->mWeight[mHunterId];
 
 	for (Maze::CellPos* cellPos : adjacentFloor)
 	{
-		if (cellPos->mWeight < minWeight)
+		if (cellPos->mWeight[mHunterId] < minWeight)
 		{
-			minWeight = cellPos->mWeight;
+			minWeight = cellPos->mWeight[mHunterId];
 			filteredList.clear();
 		}
 
-		if (cellPos->mWeight == minWeight)
+		if (cellPos->mWeight[mHunterId] == minWeight)
 		{
 			filteredList.push_back(cellPos);
 		}
