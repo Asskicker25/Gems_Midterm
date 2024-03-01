@@ -73,6 +73,7 @@ void EditorLayout::SetMaximizeState(bool state)
 void EditorLayout::SetApplicationPlayState(bool state)
 {
 	application->applicationPlay = state;
+	application->OnPlayStateChanged(state);
 }
 
 void EditorLayout::SetHoveredPanel(bool viewport)

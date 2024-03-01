@@ -36,16 +36,17 @@ void Scene_One::Start()
 
 void Scene_One::Update()
 {
-	if (mApplicationPlayState == mApplication->applicationPlay) return;
 
-	mApplicationPlayState = !mApplicationPlayState;
-
-	for (Hunter* hunter : mListOfHunters)
-	{
-		hunter->mThreadInfo.mIsRunning = mApplicationPlayState;
-	}
 }
 
 void Scene_One::Render()
 {
+}
+
+void Scene_One::OnPlayStateChanged(bool state)
+{
+	for (Hunter* hunter : mListOfHunters)
+	{
+		hunter->mThreadInfo.mIsRunning = state;
+	}
 }

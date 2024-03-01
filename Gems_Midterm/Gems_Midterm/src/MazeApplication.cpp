@@ -47,6 +47,11 @@ void MazeApplication::Shutdown()
 {
 }
 
+void MazeApplication::OnPlayStateChanged(bool state)
+{
+	sceneOne->OnPlayStateChanged(state);
+}
+
 void MazeApplication::ProcessInput(GLFWwindow* window)
 {
 }
@@ -58,3 +63,5 @@ void MazeApplication::KeyCallBack(GLFWwindow* window, int& key, int& scancode, i
 void MazeApplication::MouseButtonCallback(GLFWwindow* window, int& button, int& action, int& mods)
 {
 }
+
+

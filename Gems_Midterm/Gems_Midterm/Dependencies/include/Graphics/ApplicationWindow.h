@@ -120,6 +120,7 @@ public:
 	virtual void Update() = 0;
 	virtual void Render() = 0;
 	virtual void Shutdown() = 0;
+	virtual void OnPlayStateChanged(bool state) = 0;
 	virtual void ProcessInput(GLFWwindow* window) = 0;
 	virtual void KeyCallBack(GLFWwindow* window, int& key, int& scancode, int& action, int& mods) = 0;
 	virtual void MouseButtonCallback(GLFWwindow* window, int& button, int& action, int& mods) = 0;

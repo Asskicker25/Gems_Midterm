@@ -15,5 +15,8 @@ class MazeApplication : public ApplicationWindow
 	void MouseButtonCallback(GLFWwindow* window, int& button, int& action, int& mods) override;
 
 	Scene_One* sceneOne = nullptr;
+
+	// Inherited via ApplicationWindow
+	void OnPlayStateChanged(bool state) override;
 };
 

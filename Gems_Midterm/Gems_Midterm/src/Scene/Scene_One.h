@@ -22,6 +22,8 @@ public:
 	void Start() override;
 	void Update() override;
 	void Render() override;
+
+	void OnPlayStateChanged(bool state);
 	
 private:
 
@@ -34,6 +36,5 @@ private:
 	static const int HUNTERS_COUNT = 5;
 	std::vector<Hunter*> mListOfHunters;
 
-	bool mApplicationPlayState = false;
 };
 
