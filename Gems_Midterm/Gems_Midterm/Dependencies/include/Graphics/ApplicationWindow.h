@@ -96,6 +96,7 @@ public:
 	Shader defShader;
 	Shader alphaBlendShader;
 	Shader alphaCutOutShader;
+	Shader defInstanceShader;
 	SkyBoxShader skyboxShader;
 
 

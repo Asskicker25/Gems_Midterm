@@ -33,6 +33,8 @@ void Scene_One::Start()
 		Hunter* hunter = new Hunter(mMaze);
 		hunter->CopyFromModel(hunterModel,true);
 		hunter->mHunterId = i;
+		hunter->Initialize();
+
 		mListOfHunters.push_back(hunter);
 	}
 

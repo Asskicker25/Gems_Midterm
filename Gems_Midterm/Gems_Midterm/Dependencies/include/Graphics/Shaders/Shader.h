@@ -50,6 +50,7 @@ public:
 	void SetUniform1f(const std::string& property, float x);
 	void SetUniform3f(const std::string& property, float x, float y, float z);
 	void SetUniform4f(const std::string& property, float x, float y, float z, float w);
+	void SetUniformMatrix4fv(const std::string& property, unsigned int count, bool transpose, const float* value);
 	void SetUniform1i(const std::string& property,int slot);
 	void SetUniformMat(const std::string& property, glm::mat4 value);
 

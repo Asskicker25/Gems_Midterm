@@ -63,6 +63,7 @@ public:
 	Shader* solidColorShader;
 	Shader* alphaBlendShader;
 	Shader* alphaCutOutShader;
+	Shader* defInstanceShader;
 
 	Camera* camera = nullptr;
 

@@ -131,9 +131,13 @@ void ApplicationWindow::InitializeWindow(int windowWidth, int windowHeight)
 	solidColorShader.LoadShader("res/Shader/SolidColorShader.shader", Shader::ALPHA_OPAQUE, false);
 	//Debugger::Print("SolidColorShader  Id : ", solidColorShader.GetShaderId());
 
+
 	defShader.LoadShader("res/Shader/Shader.shader");
 	//Debugger::Print("DefShader Shader Id : ", defShader.GetShaderId());
 	defShader.applyInverseModel = true;
+
+	defInstanceShader.LoadShader("res/Shader/DefaultInstancing.shader");
+	defInstanceShader.applyInverseModel = true;
 
 	alphaBlendShader.LoadShader("res/Shader/Shader.shader");
 	//Debugger::Print("TranparentShader Shader Id : ", alphaBlendShader.GetShaderId());
@@ -149,6 +153,7 @@ void ApplicationWindow::InitializeWindow(int windowWidth, int windowHeight)
 	Renderer::GetInstance().defaultShader = &defShader;
 	Renderer::GetInstance().alphaBlendShader = &alphaBlendShader;
 	Renderer::GetInstance().alphaCutOutShader = &alphaCutOutShader;
+	Renderer::GetInstance().defInstanceShader = &defInstanceShader;
 
 	Renderer::GetInstance().camera = viewportCamera;
 

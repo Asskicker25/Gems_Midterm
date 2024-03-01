@@ -23,7 +23,7 @@ public:
 	Mesh() = default;
 	Mesh(std::vector<Vertex>& vertices, std::vector< unsigned int>& indices, std::string name = "NoName");
 
-	void DrawShadedMesh(Shader* shader, BaseMaterial* material,  bool isWireFrame = false);
+	virtual void DrawShadedMesh(Shader* shader, BaseMaterial* material,  bool isWireFrame = false);
 	void DrawSolidColorMesh(Shader* shader, glm::vec3 color, bool isWireFrame = false);
 	void DrawNormals(Shader* shader, glm::vec3 color, glm::mat4 transformMatrix);
 
@@ -31,6 +31,7 @@ public:
 	void UpdateVertices(std::vector<Vertex>& vertices, std::vector< unsigned int> indices);
 
 	VertexArray VAO;
+	IndexBuffer IBO;
 
 	std::string name;
 
@@ -39,7 +40,6 @@ public:
 private:
 
 	VertexBuffer VBO;
-	IndexBuffer IBO;
 	VertexLayout layout;
 
 	//unsigned int VAO, VBO, EBO;

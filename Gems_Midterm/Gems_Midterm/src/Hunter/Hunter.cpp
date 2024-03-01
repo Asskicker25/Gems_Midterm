@@ -10,15 +10,6 @@ Hunter::Hunter(Maze* maze) : mMaze{ maze }
 	name = "Hunter";
 	//LoadModel("Assets/Models/Hunter.fbx");
 
-	mCurrentCell = mMaze->START_CELL_POS;
-	mPrevCell = Maze::CellPos(-1, -1);
-
-	transform.SetPosition(mMaze->GetCellPosition(mMaze->START_CELL_POS));
-	transform.position.z += 0.1;
-	transform.SetScale(glm::vec3(0.0175f));
-
-	InputManager::GetInstance().AddListener(this);
-	InitializeThread();
 }
 
 void Hunter::InitializeThread()
@@ -37,6 +28,19 @@ void Hunter::InitializeThread()
 		0,								// dwCreationFlags (0 or CREATE_SUSPENDED)
 		&mThreadInfo.ThreadId);			// lpThreadId
 
+}
+
+void Hunter::Initialize()
+{
+	mCurrentCell = mMaze->START_CELL_POS;
+	mPrevCell = Maze::CellPos(-1, -1);
+
+	transform.SetPosition(mMaze->GetCellPosition(mMaze->START_CELL_POS));
+	transform.position.z += 0.1;
+	transform.SetScale(glm::vec3(0.0175f));
+
+	InputManager::GetInstance().AddListener(this);
+	InitializeThread();
 }
 
 Hunter::~Hunter()
@@ -112,6 +116,8 @@ void Hunter::OnKeyPressed(const int& key)
 
 void Hunter::OnPropertyDraw()
 {
+	Model::OnPropertyDraw();
+
 	if (!ImGui::TreeNodeEx("Hunter", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		return;

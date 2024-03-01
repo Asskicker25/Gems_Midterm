@@ -17,6 +17,7 @@ public:
 	unsigned int mHunterId = 0;
 
 	void InitializeThread();
+	void Initialize();
 	void UpdateHunter(float delatTime);
 	virtual void Update(float deltaTime) override;
 

@@ -168,6 +168,12 @@ void Shader::SetUniform4f(const std::string& property, float x, float y, float z
 	GLCALL(glUniform4f(GetLocation(property), x, y, z, w));
 }
 
+void Shader::SetUniformMatrix4fv(const std::string& property, unsigned int count, bool transpose, const float* value)
+{
+	GLCALL(glUniformMatrix4fv(GetLocation(property), count, transpose, value));
+
+}
+
 void Shader::SetUniform1i(const std::string& property, int slot)
 {
 	GLCALL(glUniform1i(GetLocation(property), slot));

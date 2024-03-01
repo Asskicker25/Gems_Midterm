@@ -34,7 +34,7 @@ public:
 	void LoadModel(const std::string& path, bool debugModel = false);
 	void LoadModel(MeshDataHolder& meshData, bool debugModel = false);
 	void DrawNormals();
-	void DrawShaded(Shader* shader);
+	virtual void DrawShaded(Shader* shader);
 	void DrawWireframe(const glm::vec3& color);
 
 	virtual void OnPropertyDraw();
