@@ -1,0 +1,12 @@
+#pragma once
+
+#define APP_WIDTH 1920
+#define APP_HEIGHT 1080
+
+#define GAME_RESOLUTION_WIDTH 1920
+#define GAME_RESOLUTION_HEIGHT 1080
+
+#define NORMALS_SIZE 0.5f
+
+#define GIZMO_ICON_SIZE 0.1f
+
