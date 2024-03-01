@@ -2,6 +2,7 @@
 
 #include <Graphics/Scene/BaseScene.h>
 #include <Graphics/GameCamera.h>
+#include "../Maze/Maze.h"
 
 using namespace Scene;
 
@@ -21,8 +22,7 @@ public:
 private:
 
 	MazeApplication* mApplication = nullptr;
-
 	GameCamera* mMainCamera = nullptr;
-
+	Maze* mMaze = nullptr;
 };
 

@@ -14,6 +14,8 @@ void Scene_One::Start()
 	mMainCamera->transform.SetRotation(glm::vec3(0, 0, 0));
 	//mMainCamera->applyPostProcessing = true;
 
+
+	mMaze = new Maze();
 }
 
 void Scene_One::Update()

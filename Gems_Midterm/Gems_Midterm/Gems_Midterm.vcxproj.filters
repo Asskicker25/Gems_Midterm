@@ -66,6 +66,9 @@
     <ClInclude Include="src\Scene\Scene_One.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Maze\Maze.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Dependencies\include\imgui\ImCurveEdit.cpp">
@@ -108,6 +111,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\Scene_One.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Maze\Maze.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
