@@ -69,6 +69,15 @@
     <ClInclude Include="src\Maze\Maze.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hunter\Hunter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hunter\HunterThreadInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera\CameraController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Dependencies\include\imgui\ImCurveEdit.cpp">
@@ -114,6 +123,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Maze\Maze.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hunter\Hunter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera\CameraController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

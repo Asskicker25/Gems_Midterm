@@ -2,6 +2,7 @@
 
 #include <Graphics/EntityManager/EntityManager.h>
 #include <Graphics/Model.h>
+#include <Windows.h>
 
 class Maze : public Entity
 {
@@ -16,8 +17,18 @@ public:
 			this->Y = Y;
 		}
 
+		bool operator==(const CellPos& other)
+		{
+			if (other.X != X) return false;
+			if (other.Y != Y) return false;
+
+			return true;
+		}
+
 		unsigned int X = 0;
 		unsigned int Y = 0;
+
+		int mWeight = 0;
 	};
 
 	struct Cell
@@ -27,6 +38,8 @@ public:
 			WALL = 0,
 			FLOOR = 1,
 		};
+
+		
 
 		bool mHasTreasure = false;
 		Type type = Type::WALL;
@@ -39,12 +52,23 @@ public:
 	};
 
 	Maze();
+	~Maze();
 
 	// Inherited via Entity
 	void Start() override;
 	void Update(float deltaTime) override;
 	void Render() override;
 	void OnDestroy() override;
+
+	static CellPos START_CELL_POS;
+	static CellPos END_CELL_POS;
+
+	glm::vec3 GetCellPosition(unsigned int row, unsigned int column);
+	glm::vec3 GetCellPosition(CellPos cellPos);
+
+	Cell& GetCell(CellPos cellPos);
+
+	CRITICAL_SECTION mMaze_CS;
 
 private:
 	void LoadMazeFromFile(const std::string& path);
@@ -55,20 +79,13 @@ private:
 	void AddAsFloor(CellPos cellPos);
 	void AddAdjacentFloor(CellPos theMainCell, CellPos theFloorCell);
 
-	Cell& GetCell(CellPos cellPos);
-
-	glm::vec3 GetCellPosition(unsigned int row, unsigned int column);
-	glm::vec3 GetCellPosition(CellPos cellPos);
-
+	
 	bool IsFloor(unsigned int row, unsigned int column);
 	bool HasTreasure(unsigned int row, unsigned int column);
 
 	Model* mQuad = nullptr;
 
 	int mWallCount = 0;
-
-	static CellPos START_CELL_POS;
-	static CellPos END_CELL_POS;
 
 	static const int ROW_SIZE = 149;
 	static const int COLUMN_SIZE = 115;

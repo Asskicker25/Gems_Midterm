@@ -21,8 +21,14 @@ void Scene_One::Start()
 	mDirLight->InitializeLight(Directional);
 	mDirLight->intensity = 0.8;
 
+	mCameraController = new CameraController(mMainCamera);
 
 	mMaze = new Maze();
+
+	for (int i = 0; i < HUNTERS_COUNT; i++)
+	{
+		Hunter* hunter = new Hunter(mMaze);
+	}
 }
 
 void Scene_One::Update()

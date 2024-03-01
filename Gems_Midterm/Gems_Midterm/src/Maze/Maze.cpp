@@ -13,13 +13,20 @@ Maze::CellPos Maze::END_CELL_POS = Maze::CellPos(1, 113);
 Maze::Maze()
 {
 	InitializeEntity(this);
-
 	name = "Maze";
+
+	InitializeCriticalSection(&mMaze_CS);
 
 	LoadMazeFromFile("DungeonDetails/Dungeon.txt");
 	//PrintMaze();
 	SpawnTreasure();
 	LoadModels();
+
+}
+
+Maze::~Maze()
+{
+	DeleteCriticalSection(&mMaze_CS);
 }
 
 void Maze::Start()
@@ -166,10 +173,22 @@ void Maze::LoadModels()
 
 }
 
+
+
 glm::vec3 Maze::GetCellPosition(unsigned int row, unsigned int column)
 {
-	return mMazeCells[row][column].mCellWorldPosition;
+	EnterCriticalSection(&mMaze_CS);
+	Cell& cell = mMazeCells[row][column];
+	LeaveCriticalSection(&mMaze_CS);
+
+	return cell.mCellWorldPosition;
 }
+
+glm::vec3 Maze::GetCellPosition(CellPos cellPos)
+{
+	return GetCellPosition(cellPos.X, cellPos.Y);
+}
+
 
 void Maze::SpawnTreasure()
 {
@@ -190,10 +209,6 @@ void Maze::SpawnTreasure()
 	}
 }
 
-glm::vec3 Maze::GetCellPosition(CellPos cellPos)
-{
-	return GetCellPosition(cellPos.X, cellPos.Y);
-}
 
 bool Maze::IsFloor(unsigned int row, unsigned int column)
 {
@@ -223,5 +238,9 @@ bool Maze::HasTreasure(unsigned int row, unsigned int column)
 
 Maze::Cell& Maze::GetCell(CellPos cellPos)
 {
-	return mMazeCells[cellPos.X][cellPos.Y];
+	EnterCriticalSection(&mMaze_CS);
+	Cell& cell = mMazeCells[cellPos.X][cellPos.Y];
+	LeaveCriticalSection(&mMaze_CS);
+
+	return cell;
 }

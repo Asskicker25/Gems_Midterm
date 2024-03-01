@@ -1,3 +1,5 @@
+#define NOMINMAX
+
 #include "MazeApplication.h"
 #include "AppSettings.h"
 
