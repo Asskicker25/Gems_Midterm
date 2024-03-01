@@ -3,7 +3,7 @@
 void MazeApplication::SetUp()
 {
 	viewportCamera->InitializeCamera(PERSPECTIVE, windowWidth, windowHeight, 0.1f, 500.0f, 65.0f);
-	viewportCamera->transform.SetPosition(glm::vec3(0, 0, 30));
+	viewportCamera->transform.SetPosition(glm::vec3(127.4f, -147.6f, 242.4f));
 	viewportCamera->transform.SetRotation(glm::vec3(0, 0, 0));
 	viewportCamera->applyPostProcessing = true;
 

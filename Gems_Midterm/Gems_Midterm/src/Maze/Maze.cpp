@@ -1,5 +1,8 @@
-#include "Maze.h"
 #include <fstream>
+#include <Graphics/Renderer.h>
+#include <Graphics/UnlitColorMaterial.h>
+
+#include "Maze.h"
 
 Maze::Maze()
 {
@@ -8,7 +11,8 @@ Maze::Maze()
 	name = "Maze";
 
 	LoadMazeFromFile("DungeonDetails/Dungeon.txt");
-	PrintMaze();
+	//PrintMaze();
+	LoadModels();
 }
 
 void Maze::Start()
@@ -78,4 +82,41 @@ void Maze::PrintMaze()
 
 		printf("\n");
 	}
+}
+
+void Maze::LoadModels()
+{
+	mQuad = new Model("res/Models/DefaultQuad.fbx",false);
+	mQuad->name = "Quad";
+	mQuad->shader = Renderer::GetInstance().solidColorShader;
+	mQuad->meshes[0]->material = new UnlitColorMaterial();
+
+	/*Model* meh = new Model();
+	meh->CopyFromModel(*mQuad);*/
+
+	mListOfModels.reserve(ROW_SIZE * COLUMN_SIZE);
+
+	for (int row = 0; row < ROW_SIZE; row++)
+	{
+		for (int column = 0; column < COLUMN_SIZE; column++)
+		{
+			if (mMazeCells[row][column].type == Cell::WALL)
+			{
+				Model* floor = new Model();
+				floor->CopyFromModel(*mQuad);
+
+				floor->transform.SetPosition(glm::vec3(
+					column * CELL_SIZE,
+					-row * CELL_SIZE,
+					0));
+
+				Renderer::GetInstance().AddModel(floor);
+				mListOfModels.push_back(floor);
+			}
+			
+		}
+
+		//if (row == 2) return;
+	}
+
 }
