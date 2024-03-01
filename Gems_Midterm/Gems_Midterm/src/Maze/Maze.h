@@ -34,6 +34,8 @@ public:
 		CellPos mCellPos;
 		glm::vec3 mCellWorldPosition = glm::vec3(0);
 
+		std::vector<CellPos> mAdjacentFloors;
+
 	};
 
 	Maze();
@@ -50,12 +52,17 @@ private:
 	void LoadModels();
 	void SpawnTreasure();
 
+	void AddAsFloor(CellPos cellPos);
+	void AddAdjacentFloor(CellPos theMainCell, CellPos theFloorCell);
+
+	Cell& GetCell(CellPos cellPos);
+
 	glm::vec3 GetCellPosition(unsigned int row, unsigned int column);
 	glm::vec3 GetCellPosition(CellPos cellPos);
-	
+
 	bool IsFloor(unsigned int row, unsigned int column);
 	bool HasTreasure(unsigned int row, unsigned int column);
-	 
+
 	Model* mQuad = nullptr;
 
 	int mWallCount = 0;
@@ -68,7 +75,7 @@ private:
 	static const int TREASURE_COUNT = 250;
 	static constexpr float CELL_SIZE = 2.0f;
 
-  
+
 	glm::vec4 mStartPosColor = glm::vec4(0.1f, 0.8f, 0.1f, 1.0f);
 	glm::vec4 mEndPosColor = glm::vec4(0.8f, 0.1f, 0.1f, 1.0f);
 	glm::vec4 mTreasureColor = glm::vec4(0.9f, 0.9f, 0.1f, 1.0f);
@@ -77,7 +84,7 @@ private:
 	Cell mMazeCells[ROW_SIZE][COLUMN_SIZE];
 
 	std::vector<Model*> mListOfWalls;
-	std::vector<Model*> mListOfTreasures;
+	std::unordered_map<std::string, Model*> mListOfTreasures;
 
 };
 
