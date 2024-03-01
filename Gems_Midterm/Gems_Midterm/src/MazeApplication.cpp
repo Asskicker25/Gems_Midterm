@@ -9,6 +9,8 @@ void MazeApplication::SetUp()
 
 	EditorLayout::GetInstance().SetMaximizeState(true);
 
+	moveSpeed = 100;
+
 #pragma region Skybox
 
 	skyBox->meshes[0]->material = new SkyBoxMaterial();

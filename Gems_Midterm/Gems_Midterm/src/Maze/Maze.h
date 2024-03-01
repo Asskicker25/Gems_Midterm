@@ -6,6 +6,20 @@
 class Maze : public Entity
 {
 public:
+
+	struct CellPos
+	{
+		CellPos() = default;
+		CellPos(unsigned int X, unsigned int Y)
+		{
+			this->X = X;
+			this->Y = Y;
+		}
+
+		unsigned int X = 0;
+		unsigned int Y = 0;
+	};
+
 	struct Cell
 	{
 		enum Type
@@ -14,8 +28,12 @@ public:
 			FLOOR = 1,
 		};
 
-		Type type = Type::WALL;
 		bool mHasTreasure = false;
+		Type type = Type::WALL;
+
+		CellPos mCellPos;
+		glm::vec3 mCellWorldPosition = glm::vec3(0);
+
 	};
 
 	Maze();
@@ -30,16 +48,36 @@ private:
 	void LoadMazeFromFile(const std::string& path);
 	void PrintMaze();
 	void LoadModels();
+	void SpawnTreasure();
 
+	glm::vec3 GetCellPosition(unsigned int row, unsigned int column);
+	glm::vec3 GetCellPosition(CellPos cellPos);
+	
+	bool IsFloor(unsigned int row, unsigned int column);
+	bool HasTreasure(unsigned int row, unsigned int column);
+	 
 	Model* mQuad = nullptr;
+
+	int mWallCount = 0;
+
+	static CellPos START_CELL_POS;
+	static CellPos END_CELL_POS;
 
 	static const int ROW_SIZE = 149;
 	static const int COLUMN_SIZE = 115;
+	static const int TREASURE_COUNT = 250;
 	static constexpr float CELL_SIZE = 2.0f;
+
+  
+	glm::vec4 mStartPosColor = glm::vec4(0.1f, 0.8f, 0.1f, 1.0f);
+	glm::vec4 mEndPosColor = glm::vec4(0.8f, 0.1f, 0.1f, 1.0f);
+	glm::vec4 mTreasureColor = glm::vec4(0.9f, 0.9f, 0.1f, 1.0f);
+
 
 	Cell mMazeCells[ROW_SIZE][COLUMN_SIZE];
 
-	std::vector<Model*> mListOfModels;
+	std::vector<Model*> mListOfWalls;
+	std::vector<Model*> mListOfTreasures;
 
 };
 
