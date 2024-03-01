@@ -95,6 +95,12 @@ void Hunter::UpdateHunter(float delatTime)
 	}
 }
 
+void Hunter::Update(float deltaTime)
+{
+	/*Debugger::Print("Run");
+	UpdateHunter(deltaTime);*/
+}
+
 void Hunter::OnKeyPressed(const int& key)
 {
 	if (key == GLFW_KEY_SPACE)
@@ -105,17 +111,17 @@ void Hunter::OnKeyPressed(const int& key)
 
 void Hunter::Move()
 {
-	std::vector<Maze::CellPos> adjacentCells = mMaze->GetCell(mCurrentCell).mAdjacentFloors;
+	std::vector<Maze::CellPos*>& adjacentCells = mMaze->GetCell(mCurrentCell).mAdjacentFloors;
 
-	if (adjacentCells.size() == 1)
+	std::vector<Maze::CellPos*> mListOfLeastWeightCells;
+	GetLeastWeightedCells(adjacentCells, mListOfLeastWeightCells);
+
+	if (mListOfLeastWeightCells.size() == 1)
 	{
-		MoveToPosition(&adjacentCells[0]);
+		MoveToPosition(mListOfLeastWeightCells[0]);
 	}
 	else
 	{
-		std::vector<Maze::CellPos*> mListOfLeastWeightCells;
-		GetLeastWeightedCells(adjacentCells, mListOfLeastWeightCells);
-		
 		int randomIndex = 0;
 		do
 		{
@@ -136,24 +142,25 @@ void Hunter::MoveToPosition(Maze::CellPos* cellPos)
 
 	mCurrentCell = *cellPos;
 	cellPos->mWeight++;
+	//mMaze->UpdateCellColor(cellPos);
 
 }
 
-void Hunter::GetLeastWeightedCells(std::vector<Maze::CellPos>& adjacentFloor, std::vector<Maze::CellPos*>& filteredList)
+void Hunter::GetLeastWeightedCells(std::vector<Maze::CellPos*>& adjacentFloor, std::vector<Maze::CellPos*>& filteredList)
 {
-	int minWeight = adjacentFloor[0].mWeight;
+	int minWeight = adjacentFloor[0]->mWeight;
 
-	for (Maze::CellPos& cellPos : adjacentFloor)
+	for (Maze::CellPos* cellPos : adjacentFloor)
 	{
-		if (cellPos.mWeight < minWeight)
+		if (cellPos->mWeight < minWeight)
 		{
-			minWeight = cellPos.mWeight;
+			minWeight = cellPos->mWeight;
 			filteredList.clear();
 		}
 
-		if (cellPos.mWeight == minWeight)
+		if (cellPos->mWeight == minWeight)
 		{
-			filteredList.push_back(&cellPos);
+			filteredList.push_back(cellPos);
 		}
 	}
 }

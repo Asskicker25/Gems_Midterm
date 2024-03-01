@@ -16,6 +16,7 @@ public:
 
 	void InitializeThread();
 	void UpdateHunter(float delatTime);
+	virtual void Update(float deltaTime) override;
 
 	virtual void OnKeyPressed(const int& key);
 
@@ -23,13 +24,13 @@ private:
 	void Move();
 	void MoveToPosition(Maze::CellPos* cellPos);
 	
-	void GetLeastWeightedCells(std::vector<Maze::CellPos>& adjacentFloor, std::vector<Maze::CellPos*>& filteredList);
+	void GetLeastWeightedCells(std::vector<Maze::CellPos*>& adjacentFloor, std::vector<Maze::CellPos*>& filteredList);
 
 	Maze* mMaze = nullptr;
 	HunterThreadInfo mThreadInfo;
 
 	float mTimeStep = 0;
-	float HUNTER_NEXT_STEP_TIME = 0.1f;
+	float HUNTER_NEXT_STEP_TIME = 0.05f;
 
 	Maze::CellPos mCurrentCell;
 	Maze::CellPos mPrevCell;

@@ -39,6 +39,21 @@ void Maze::Update(float deltaTime)
 
 void Maze::Render()
 {
+	if (mListOfFloors.size() == 0) return;
+
+	for (unsigned int row = 0; row < ROW_SIZE; row++)
+	{
+		for (unsigned int column = 0; column < COLUMN_SIZE; column++)
+		{
+			CellPos cellPos(row, column);
+
+			if (GetCell(cellPos).type == Cell::FLOOR)
+			{
+				UpdateCellColor(GetCell(cellPos).mCellPos);
+			}
+		}
+	}
+
 }
 
 void Maze::OnDestroy()
@@ -125,18 +140,19 @@ void Maze::LoadModels()
 				0);
 
 			mMazeCells[row][column].mCellWorldPosition = cellWorldPosition;
+			mMazeCells[row][column].mCellPos = CellPos(row, column);
 
 			if (mMazeCells[row][column].type == Cell::WALL)
 			{
-				Model* floor = new Model();
-				floor->CopyFromModel(*mQuad);
+				Model* wall = new Model();
+				wall->CopyFromModel(*mQuad);
 
-				floor->transform.SetPosition(cellWorldPosition);
+				wall->transform.SetPosition(cellWorldPosition);
 
-				Renderer::GetInstance().AddModel(floor);
-				mListOfWalls.push_back(floor);
+				Renderer::GetInstance().AddModel(wall);
+				mListOfWalls.push_back(wall);
 			}
-			else 
+			else
 			{
 				if (mMazeCells[row][column].mHasTreasure)
 				{
@@ -147,8 +163,19 @@ void Maze::LoadModels()
 					treasure->transform.SetPosition(cellWorldPosition);
 
 					Renderer::GetInstance().AddModel(treasure);
-					mListOfTreasures[std::to_string(row) + std::to_string(column)] = treasure;
+					mListOfTreasures[GetUniqueId(row, column)] = treasure;
 				}
+
+
+				Model* floor = new Model();
+				floor->CopyFromModel(*mQuad, false);
+				floor->meshes[0]->material->AsUnlitMaterial()->SetBaseColor(mFloorColor);
+				floor->transform.SetPosition(cellWorldPosition);
+				floor->transform.position.z -= 0.1f;
+				floor->transform.SetScale(glm::vec3(1.0f));
+
+				Renderer::GetInstance().AddModel(floor);
+				mListOfFloors[GetUniqueId(row, column)] = floor;
 
 				AddAsFloor(CellPos(row, column));
 			}
@@ -228,12 +255,26 @@ void Maze::AddAdjacentFloor(CellPos theMainCell, CellPos theFloorCell)
 	if (theMainCell.X < 0 || theMainCell.Y < 0 || theMainCell.X > ROW_SIZE - 1 || theMainCell.Y > COLUMN_SIZE - 1) return;
 	if (GetCell(theMainCell).type == Cell::WALL) return;
 
-	GetCell(theMainCell).mAdjacentFloors.push_back(theFloorCell);
+	GetCell(theMainCell).mAdjacentFloors.push_back(&GetCell(theFloorCell).mCellPos);
 }
 
 bool Maze::HasTreasure(unsigned int row, unsigned int column)
 {
 	return mMazeCells[row][column].mHasTreasure;
+}
+
+int Maze::GetUniqueId(int row, int column)
+{
+	return (row << 16) | column;
+}
+
+void Maze::UpdateCellColor(CellPos& cellPos)
+{
+	UnlitColorMaterial* mat = mListOfFloors[GetUniqueId(cellPos.X, cellPos.Y)]->meshes[0]->material->AsUnlitMaterial();
+
+	glm::vec4 color = mat->GetBaseColor();
+	color.x = MathUtils::Remap(cellPos.mWeight, 0, 10, 0, 1);
+	mat->SetBaseColor(color);
 }
 
 Maze::Cell& Maze::GetCell(CellPos cellPos)

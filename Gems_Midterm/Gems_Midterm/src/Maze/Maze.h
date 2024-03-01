@@ -39,15 +39,13 @@ public:
 			FLOOR = 1,
 		};
 
-		
-
 		bool mHasTreasure = false;
 		Type type = Type::WALL;
 
 		CellPos mCellPos;
 		glm::vec3 mCellWorldPosition = glm::vec3(0);
 
-		std::vector<CellPos> mAdjacentFloors;
+		std::vector<CellPos*> mAdjacentFloors;
 
 	};
 
@@ -66,6 +64,8 @@ public:
 	glm::vec3 GetCellPosition(unsigned int row, unsigned int column);
 	glm::vec3 GetCellPosition(CellPos cellPos);
 
+	void UpdateCellColor(CellPos& cellPos);
+
 	Cell& GetCell(CellPos cellPos);
 
 	CRITICAL_SECTION mMaze_CS;
@@ -75,6 +75,7 @@ private:
 	void PrintMaze();
 	void LoadModels();
 	void SpawnTreasure();
+	int GetUniqueId(int row, int column);
 
 	void AddAsFloor(CellPos cellPos);
 	void AddAdjacentFloor(CellPos theMainCell, CellPos theFloorCell);
@@ -92,16 +93,17 @@ private:
 	static const int TREASURE_COUNT = 250;
 	static constexpr float CELL_SIZE = 2.0f;
 
-
 	glm::vec4 mStartPosColor = glm::vec4(0.1f, 0.8f, 0.1f, 1.0f);
 	glm::vec4 mEndPosColor = glm::vec4(0.8f, 0.1f, 0.1f, 1.0f);
 	glm::vec4 mTreasureColor = glm::vec4(0.9f, 0.9f, 0.1f, 1.0f);
+	glm::vec4 mFloorColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 
 	Cell mMazeCells[ROW_SIZE][COLUMN_SIZE];
 
 	std::vector<Model*> mListOfWalls;
-	std::unordered_map<std::string, Model*> mListOfTreasures;
+	std::unordered_map<int, Model*> mListOfTreasures;
+	std::unordered_map<int, Model*> mListOfFloors;
 
 };
 
