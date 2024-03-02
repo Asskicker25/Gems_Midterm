@@ -158,6 +158,7 @@
     <ClInclude Include="src\AppSettings.h" />
     <ClInclude Include="src\MazeApplication.h" />
     <ClInclude Include="src\Scene\Scene_One.h" />
+    <ClInclude Include="src\Thread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Dependencies\include\imgui\ImCurveEdit.cpp" />

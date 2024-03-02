@@ -15,7 +15,6 @@ public:
 
     DWORD sleepTime = 0;
     DWORD ThreadId = 0;
-    HANDLE threadHandle = 0;
 
     CRITICAL_SECTION* mMaze_CS = nullptr;
 };

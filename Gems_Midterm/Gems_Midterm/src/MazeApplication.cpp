@@ -45,6 +45,7 @@ void MazeApplication::Render()
 
 void MazeApplication::Shutdown()
 {
+	sceneOne->ShutDown();
 }
 
 void MazeApplication::OnPlayStateChanged(bool state)

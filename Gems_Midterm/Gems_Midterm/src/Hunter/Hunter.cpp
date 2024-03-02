@@ -22,77 +22,17 @@ void Hunter::Initialize()
 	transform.SetScale(glm::vec3(0.0175f));
 
 	InputManager::GetInstance().AddListener(this);
-	InitializeThread();
-}
-
-
-void Hunter::InitializeThread()
-{
-	mThreadInfo.mDesiredUpdateTime = FIXED_STEP_TIME;
-	mThreadInfo.mHunter = this;
-	mThreadInfo.isAlive = true;
-	mThreadInfo.sleepTime = 100;
-	mThreadInfo.mMaze_CS = &mMaze->mMaze_CS;
-
-	mThreadInfo.threadHandle = CreateThread(
-		NULL,							// lpThreadAttributes,
-		0,								// dwStackSize,
-		UpdateHunterThread,				// lpStartAddress,
-		(void*)&mThreadInfo,			//  lpParameter,
-		0,								// dwCreationFlags (0 or CREATE_SUSPENDED)
-		&mThreadInfo.ThreadId);			// lpThreadId
-
 }
 
 
 Hunter::~Hunter()
 {
-	mThreadInfo.isAlive = false;
-	WaitForSingleObject(mThreadInfo.threadHandle, INFINITE);
-	CloseHandle(mThreadInfo.threadHandle);
 }
 
-
-DWORD UpdateHunterThread(LPVOID lpParameter)
-{
-	HunterThreadInfo* threadInfo = (HunterThreadInfo*)lpParameter;
-
-	double currentTime = glfwGetTime();
-	double lastTime = currentTime;
-	double deltaTime = 0.0f;
-
-	double timeStep = 0.0f;
-
-	while (threadInfo->isAlive)
-	{
-		if (threadInfo->mIsRunning)
-		{
-			currentTime = glfwGetTime();
-			deltaTime = currentTime - lastTime;
-			lastTime = currentTime;
-
-			if (deltaTime > threadInfo->mDesiredUpdateTime) { deltaTime = threadInfo->mDesiredUpdateTime; }
-
-			timeStep += deltaTime;
-
-			if (timeStep >= threadInfo->mDesiredUpdateTime)
-			{
-				timeStep = 0;
-
-				threadInfo->mHunter->UpdateHunter(deltaTime, threadInfo);
-			}
-
-			Sleep(threadInfo->sleepTime);
-		}
-
-	}
-
-
-	return 0;
-}
 
 void Hunter::UpdateHunter(float delatTime, HunterThreadInfo* threadInfo)
 {
+
 	mTimeStep += delatTime;
 
 	if (mTimeStep > HUNTER_NEXT_STEP_TIME)
@@ -110,9 +50,17 @@ void Hunter::Update(float deltaTime)
 
 void Hunter::OnKeyPressed(const int& key)
 {
-	if (key == GLFW_KEY_SPACE)
+	if (key == GLFW_KEY_RIGHT)
 	{
-		mThreadInfo.mIsRunning = true;
+		HUNTER_NEXT_STEP_TIME -= 0.01;
+
+		if (HUNTER_NEXT_STEP_TIME < 0.01) { HUNTER_NEXT_STEP_TIME = 0.01f; }
+	}
+	else if (key == GLFW_KEY_LEFT)
+	{
+		HUNTER_NEXT_STEP_TIME += 0.01;
+
+		if (HUNTER_NEXT_STEP_TIME > 1) { HUNTER_NEXT_STEP_TIME = 1; }
 	}
 }
 
@@ -131,6 +79,12 @@ void Hunter::OnPropertyDraw()
 	ImGui::TreePop();
 }
 
+void Hunter::MoveToFinalPosition()
+{
+	transform.SetPosition(mMaze->GetCellPosition(mMaze->END_CELL_POS));
+	transform.position.z += 0.1;
+}
+
 void Hunter::Move(HunterThreadInfo* threadInfo)
 {
 	std::vector<Maze::CellPos*>& adjacentCells = mMaze->GetCell(mCurrentCell).mAdjacentFloors;
@@ -142,7 +96,7 @@ void Hunter::Move(HunterThreadInfo* threadInfo)
 
 	if (mListOfLeastWeightCells.size() == 1)
 	{
-		MoveToPosition(mListOfLeastWeightCells[0]);
+		MoveToPosition(mListOfLeastWeightCells[0], threadInfo);
 	}
 	else
 	{
@@ -153,19 +107,20 @@ void Hunter::Move(HunterThreadInfo* threadInfo)
 
 		} while (*mListOfLeastWeightCells[randomIndex] == mPrevCell);
 
-		MoveToPosition(mListOfLeastWeightCells[randomIndex]);
+		MoveToPosition(mListOfLeastWeightCells[randomIndex], threadInfo);
 	}
 
 	LeaveCriticalSection(threadInfo->mMaze_CS);
 }
 
-void Hunter::MoveToPosition(Maze::CellPos* cellPos)
+void Hunter::MoveToPosition(Maze::CellPos* cellPos, HunterThreadInfo* threadInfo)
 {
 	mPrevCell = mCurrentCell;
 
 	transform.SetPosition(mMaze->GetCellPosition(*cellPos));
 	transform.position.z += 0.1;
 
+	EnterCriticalSection(threadInfo->mMaze_CS);
 	mCurrentCell = *cellPos;
 	cellPos->mWeight[mHunterId]++;
 
@@ -173,7 +128,7 @@ void Hunter::MoveToPosition(Maze::CellPos* cellPos)
 	{
 		mNumberOfTreasureCollected++;
 	}
-
+	LeaveCriticalSection(threadInfo->mMaze_CS);
 	//mMaze->UpdateCellColor(cellPos);
 
 }

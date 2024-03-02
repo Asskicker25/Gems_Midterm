@@ -13,7 +13,7 @@ using namespace MathUtilities;
 Maze::CellPos Maze::START_CELL_POS = Maze::CellPos(147, 1);
 Maze::CellPos Maze::END_CELL_POS = Maze::CellPos(1, 113);
 
-Maze::Maze(unsigned int numOfHunters) : mNumOfHunters { numOfHunters }
+Maze::Maze(unsigned int numOfHunters) : mNumOfHunters{ numOfHunters }
 {
 	InitializeEntity(this);
 	name = "Maze";
@@ -178,6 +178,8 @@ void Maze::LoadModels()
 
 					Renderer::GetInstance().AddModel(treasure);
 					mListOfTreasures[GetUniqueId(row, column)] = treasure;
+
+					mNumOfTreasures++;
 				}
 
 
@@ -235,7 +237,7 @@ void Maze::SpawnTreasure()
 {
 	int randomX;
 	int randomY;
-	mNumOfTreasures = TREASURE_COUNT;
+	//mNumOfTreasures = TREASURE_COUNT;
 
 	for (unsigned int count = 0; count < TREASURE_COUNT; count++)
 	{
@@ -244,8 +246,11 @@ void Maze::SpawnTreasure()
 			randomX = MathUtils::GetRandomIntNumber(0, ROW_SIZE - 1);
 			randomY = MathUtils::GetRandomIntNumber(0, COLUMN_SIZE - 1);
 
-		} while (!IsFloor(randomX, randomY) && HasTreasure(randomX, randomY));
+		} while (!IsFloor(randomX, randomY) || HasTreasure(randomX, randomY));
 
+		/*if (count < 13)
+		{
+		}*/
 		mMazeCells[randomX][randomY].mHasTreasure = true;
 
 	}
@@ -283,6 +288,11 @@ int Maze::GetUniqueId(int row, int column)
 	return (row << 16) | column;
 }
 
+bool Maze::IsTreasureLeftZero()
+{
+	return mNumOfTreasures == 0;
+}
+
 void Maze::OnPropertyDraw()
 {
 	if (!ImGui::TreeNodeEx("Maze", ImGuiTreeNodeFlags_DefaultOpen))
@@ -298,12 +308,14 @@ void Maze::OnPropertyDraw()
 int Maze::GetRandomIntNumber(int minInclusive, int maxInclusive)
 {
 	EnterCriticalSection(&mMaze_CS);
+
+
 	//int random = MathUtils::GetRandomIntNumber(minInclusive, maxInclusive);
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> distribution(minInclusive, maxInclusive);
 
-	int random =  distribution(gen);
+	int random = distribution(gen);
 
 	LeaveCriticalSection(&mMaze_CS);
 
@@ -317,6 +329,11 @@ void Maze::RenderWallInstancing()
 		mWallInstances[i]->DrawShaded(mWallInstances[i]->shader);
 	}
 
+}
+
+void Maze::ShutDown()
+{
+	DeleteCriticalSection(&mMaze_CS);
 }
 
 void Maze::UpdateCellColor(CellPos& cellPos)
@@ -361,7 +378,12 @@ bool Maze::CheckAndCollectTreasure(CellPos& cellPos)
 		Debugger::Print("Collected");
 		cell.mHasTreasure = false;
 		collected = true;
-		mNumOfTreasures--;
+		--mNumOfTreasures;
+
+		if (IsTreasureLeftZero())
+		{
+			OnAllTreasuresCollected();
+		}
 	}
 
 	LeaveCriticalSection(&mMaze_CS);

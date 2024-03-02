@@ -8,9 +8,13 @@
 #include "../Hunter/Hunter.h"
 #include "../Camera/CameraController.h"
 
+#include <Windows.h>
+
 using namespace Scene;
 
 class MazeApplication;
+
+extern DWORD WINAPI UpdateHunterThread(LPVOID lpParameter);
 
 class Scene_One : public BaseScene
 {
@@ -23,7 +27,10 @@ public:
 	void Update() override;
 	void Render() override;
 
+	void ShutDown();
+
 	void OnPlayStateChanged(bool state);
+	void OnAllTreasureCollected();
 	
 private:
 
@@ -33,7 +40,12 @@ private:
 	Light* mDirLight = nullptr;
 	Maze* mMaze = nullptr;
 
-	static const int HUNTERS_COUNT = 30;
+	static const int HUNTERS_COUNT = 64;
+	static constexpr float FIXED_STEP_TIME = 1.0f / 60.f;
+
+	HANDLE threads[HUNTERS_COUNT];
+	HunterThreadInfo* threadInfos = nullptr;
+
 	std::vector<Hunter*> mListOfHunters;
 
 };

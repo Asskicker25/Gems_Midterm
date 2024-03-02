@@ -5,7 +5,6 @@
 #include "HunterThreadInfo.h"
 #include "../Maze/Maze.h"
 
-extern DWORD WINAPI UpdateHunterThread(LPVOID lpParameter);
 
 class Hunter : public Model, public iInputListener
 {
@@ -16,7 +15,6 @@ public:
 
 	unsigned int mHunterId = 0;
 
-	void InitializeThread();
 	void Initialize();
 	void UpdateHunter(float delatTime, HunterThreadInfo* threadInfo);
 	virtual void Update(float deltaTime) override;
@@ -24,17 +22,18 @@ public:
 	virtual void OnKeyPressed(const int& key);
 	virtual void OnPropertyDraw();
 
-	HunterThreadInfo mThreadInfo;
+	void MoveToFinalPosition();
+
+	int mNumberOfTreasureCollected = 0;
 
 private:
 	void Move(HunterThreadInfo* threadInfo);
-	void MoveToPosition(Maze::CellPos* cellPos);
+	void MoveToPosition(Maze::CellPos* cellPos, HunterThreadInfo* threadInfo);
 	
 	void GetLeastWeightedCells(std::vector<Maze::CellPos*>& adjacentFloor, std::vector<Maze::CellPos*>& filteredList);
 
 	Maze* mMaze = nullptr;
 
-	int mNumberOfTreasureCollected = false;
 
 	float mTimeStep = 0;
 	float HUNTER_NEXT_STEP_TIME = 0.1f;

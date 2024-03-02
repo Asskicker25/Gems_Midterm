@@ -4,6 +4,7 @@
 #include <Graphics/Model.h>
 #include <Graphics/MeshInstance.h>
 #include <Windows.h>
+#include <functional>
 
 class Maze : public Entity
 {
@@ -70,6 +71,7 @@ public:
 	virtual void OnPropertyDraw();
 
 	void RenderWallInstancing();
+	void ShutDown();
 
 	int GetRandomIntNumber(int minInclusive, int maxInclusive);
 
@@ -86,12 +88,15 @@ public:
 
 	CRITICAL_SECTION mMaze_CS;
 
+	std::function<void()> OnAllTreasuresCollected = nullptr;
+
 private:
 	void LoadMazeFromFile(const std::string& path);
 	void PrintMaze();
 	void LoadModels();
 	void SpawnTreasure();
 	int GetUniqueId(int row, int column);
+	bool IsTreasureLeftZero();
 
 	void AddAsFloor(CellPos cellPos);
 	void AddAdjacentFloor(CellPos theMainCell, CellPos theFloorCell);
@@ -102,7 +107,7 @@ private:
 
 	static const int ROW_SIZE = 149;
 	static const int COLUMN_SIZE = 115;
-	static const int TREASURE_COUNT = 250;
+	static const int TREASURE_COUNT = 251;
 	static constexpr float CELL_SIZE = 2.0f;
 
 	MeshInstance* mWallInstances[ROW_SIZE];
